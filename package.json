@@ -1,0 +1,78 @@
+{
+  "name": "pg2c2022",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Paquete para los TPs de la materia '72.58 - Computación Gráfica' (ITBA 2do cuatrimestre 2022)",
+  "scripts": {
+    "format": "prettier --write \"src/**/*.(ts|tsx|js|jsx)\"",
+    "lint": "eslint ./src --ext .tsx,.ts,.jsx,.js --fix",
+    "start": "parcel public/index.html",
+    "build": "npm run clean & parcel build public/index.html --public-url . --no-cache",
+    "test": "react-scripts test",
+    "test:noWatch": "npm run test -- --watchAll=false",
+    "eject": "react-scripts eject",
+    "clean": "rimraf ./dist/* ./.**cache",
+    "compile": "tsc",
+    "deploy": "npm run build & gh-pages -d dist -b gh-pages"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:etawara-itba/PG2C2022.git"
+  },
+  "homepage": "https://etawara-itba.github.io",
+  "author": "Enrique Tawara <etawara@itba.edu.ar>",
+  "license": "ISC",
+  "lint-staged": {
+    "*.{tsx,tx,jsx,js}": [
+      "eslint --cache --fix",
+      "prettier --write"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "dependencies": {
+    "bootstrap": "^5.2.1",
+    "dat.gui": "^0.7.9",
+    "i18next": "^21.9.2",
+    "react": "^18.2.0",
+    "react-bootstrap": "^2.5.0",
+    "react-dom": "^18.2.0",
+    "react-i18next": "^11.18.6",
+    "react-router-dom": "^6.4.1",
+    "react-scripts": "^5.0.1",
+    "three": "0.144.0",
+    "web-vitals": "^2.1.4"
+  },
+  "devDependencies": {
+    "@parcel/packager-raw-url": "^2.7.0",
+    "@parcel/transformer-sass": "^2.7.0",
+    "@parcel/transformer-webmanifest": "^2.7.0",
+    "@types/dat.gui": "^0.7.7",
+    "@types/node": "^16.11.60",
+    "@types/react": "^18.0.21",
+    "@types/react-dom": "^18.0.6",
+    "@types/three": "0.144.0",
+    "@typescript-eslint/eslint-plugin": "^5.38.0",
+    "@typescript-eslint/parser": "^5.38.0",
+    "eslint": "^8.24.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-import": "^2.26.0",
+    "gh-pages": "^4.0.0",
+    "husky": "^4.3.8",
+    "lint-staged": "^13.0.3",
+    "parcel": "^2.7.0",
+    "prettier": "^2.7.1",
+    "process": "^0.11.10",
+    "typescript": "^4.8.3"
+  }
+}
