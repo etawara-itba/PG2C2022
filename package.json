@@ -23,7 +23,7 @@
   "author": "Enrique Tawara <etawara@itba.edu.ar>",
   "license": "ISC",
   "lint-staged": {
-    "*.{tsx,tx,jsx,js}": [
+    "*.{tsx,ts,jsx,js}": [
       "eslint --cache --fix",
       "prettier --write"
     ]
