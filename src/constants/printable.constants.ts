@@ -1,4 +1,4 @@
-export const RADIUS = 20;
+export const RADIUS = 10;
 export const POINTS_PER_HEIGHT = 10;
 export const PRINTABLE_OBJECT_RGB = '#80A0A0';
 

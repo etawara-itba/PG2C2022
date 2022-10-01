@@ -6,7 +6,8 @@
   "scripts": {
     "format": "prettier --write \"src/**/*.(ts|tsx|js|jsx)\"",
     "lint": "eslint ./src --ext .tsx,.ts,.jsx,.js --fix",
-    "start": "parcel public/index.html --no-hmr --no-cache",
+    "start": "parcel public/index.html --no-hmr",
+    "start:dist": "live-server ./dist --no-browser",
     "build": "npm run clean & parcel build public/index.html --public-url . --no-cache",
     "test": "react-scripts test",
     "test:noWatch": "npm run test -- --watchAll=false",
@@ -72,6 +73,7 @@
     "gh-pages": "^4.0.0",
     "husky": "^4.3.8",
     "lint-staged": "^13.0.3",
+    "live-server": "^1.2.2",
     "parcel": "^2.7.0",
     "prettier": "^2.7.1",
     "process": "^0.11.10",
