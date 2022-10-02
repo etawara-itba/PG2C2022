@@ -8,13 +8,13 @@
     "lint": "eslint ./src --ext .tsx,.ts,.jsx,.js --fix",
     "start": "parcel public/index.html --no-hmr",
     "start:dist": "live-server ./dist --no-browser",
-    "build": "npm run clean & parcel build public/index.html --public-url . --no-cache",
+    "build": "npm run clean && parcel build public/index.html --public-url . --no-cache",
     "test": "react-scripts test",
     "test:noWatch": "npm run test -- --watchAll=false",
     "eject": "react-scripts eject",
     "clean": "rimraf ./dist/* ./.**cache",
     "compile": "tsc",
-    "deploy": "npm run build & gh-pages -d dist -b gh-pages"
+    "deploy": "npm run build && gh-pages -d dist -b gh-pages"
   },
   "repository": {
     "type": "git",
