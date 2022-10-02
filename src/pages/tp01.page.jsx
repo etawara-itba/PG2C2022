@@ -1,29 +1,6 @@
 import React, { Component } from 'react';
 import * as THREE from 'three';
-import {
-    TP01_CAMERA_CONTROLS_MAX_DOLLY,
-    TP01_CAMERA_CONTROLS_MIN_DOLLY,
-    TP01_CAMERA_FOV,
-    TP01_CENTER_CAMERA_X,
-    TP01_CENTER_CAMERA_Y,
-    TP01_CENTER_CAMERA_Z,
-    TP01_SETTINGS_DEFAULT_HEIGHT,
-    TP01_SETTINGS_DEFAULT_SHAPE,
-    TP01_SETTINGS_DEFAULT_TWIST_ANGLE,
-    TP01_GROUND_RGB,
-    TP01_GROUND_SIZE,
-    TP01_MAX_DELTA,
-    TP01_SKY_RGB,
-    TP01_SETTINGS_MIN_HEIGHT,
-    TP01_SETTINGS_MAX_HEIGHT,
-    TP01_PRINT_SPEED,
-    TP01_PRINTED_OBJECT_MAX_HEIGHT,
-    TP01_PRINTER_X,
-    TP01_PRINTER_Y,
-    TP01_PRINTER_Z,
-    TP01_SETTINGS_MIN_TWIST_ANGLE,
-    TP01_SETTINGS_MAX_TWIST_ANGLE,
-} from '../constants/tp01.constants';
+import * as TP01 from '../constants/tp01.constants';
 import { PRINTABLE_OBJECT_RGB, PRINTABLE_SHAPES } from '../constants/printable.constants';
 import { OrbitControls } from '../scripts/OrbitControls';
 import { GUI } from 'dat.gui';
@@ -38,9 +15,9 @@ class Tp01 extends Component {
     currentCamera = undefined;
     scene = undefined;
     settings = {
-        shape: TP01_SETTINGS_DEFAULT_SHAPE,
-        height: TP01_SETTINGS_DEFAULT_HEIGHT,
-        twistAngle: TP01_SETTINGS_DEFAULT_TWIST_ANGLE,
+        shape: TP01.SETTINGS_DEFAULT_SHAPE,
+        height: TP01.SETTINGS_DEFAULT_HEIGHT,
+        twistAngle: TP01.SETTINGS_DEFAULT_TWIST_ANGLE,
         eventOnPrint: () => {
             this.eventPrintObject();
         },
@@ -57,7 +34,7 @@ class Tp01 extends Component {
 
         // renderer logic
         const renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setClearColor(TP01_SKY_RGB);
+        renderer.setClearColor(TP01.SKY_RGB);
         renderer.setSize(width, height);
         this.renderer = renderer;
 
@@ -110,7 +87,7 @@ class Tp01 extends Component {
 
     animate = () => {
         // call all animate functions here
-        const delta = Math.min(this.clock.getDelta(), TP01_MAX_DELTA);
+        const delta = Math.min(this.clock.getDelta(), TP01.MAX_DELTA);
 
         this.renderScene();
         this.frameId = window.requestAnimationFrame(this.animate);
@@ -132,11 +109,11 @@ class Tp01 extends Component {
         printerSettings.add(this.settings, 'shape', shapes).name(i18n.t('page.tp01.settings.printer.shape'));
         // height
         printerSettings
-            .add(this.settings, 'height', TP01_SETTINGS_MIN_HEIGHT, TP01_SETTINGS_MAX_HEIGHT)
+            .add(this.settings, 'height', TP01.SETTINGS_MIN_HEIGHT, TP01.SETTINGS_MAX_HEIGHT)
             .name(i18n.t('page.tp01.settings.printer.height'));
         // twist angle
         printerSettings
-            .add(this.settings, 'twistAngle', TP01_SETTINGS_MIN_TWIST_ANGLE, TP01_SETTINGS_MAX_TWIST_ANGLE)
+            .add(this.settings, 'twistAngle', TP01.SETTINGS_MIN_TWIST_ANGLE, TP01.SETTINGS_MAX_TWIST_ANGLE)
             .name(i18n.t('page.tp01.settings.printer.twistAngle'));
         // print
         printerSettings.add(this.settings, 'eventOnPrint').name(i18n.t('page.tp01.settings.printer.print'));
@@ -161,13 +138,13 @@ class Tp01 extends Component {
 
     setUpCameras = (aspect) => {
         // center camera
-        const centerCamera = new THREE.PerspectiveCamera(TP01_CAMERA_FOV, aspect, 0.1, 1000);
-        centerCamera.position.set(TP01_CENTER_CAMERA_X, TP01_CENTER_CAMERA_Y, TP01_CENTER_CAMERA_Z);
+        const centerCamera = new THREE.PerspectiveCamera(TP01.CAMERA_FOV, aspect, 0.1, 1000);
+        centerCamera.position.set(TP01.CENTER_CAMERA_X, TP01.CENTER_CAMERA_Y, TP01.CENTER_CAMERA_Z);
         const centerControls = new OrbitControls(centerCamera, this.renderer.domElement);
         centerControls.listenToKeyEvents(window);
         centerControls.enablePan = false;
-        centerControls.minDistance = TP01_CAMERA_CONTROLS_MIN_DOLLY;
-        centerControls.maxDistance = TP01_CAMERA_CONTROLS_MAX_DOLLY;
+        centerControls.minDistance = TP01.CAMERA_CONTROLS_MIN_DOLLY;
+        centerControls.maxDistance = TP01.CAMERA_CONTROLS_MAX_DOLLY;
 
         this.cameras.push(centerCamera);
 
@@ -175,16 +152,16 @@ class Tp01 extends Component {
     };
 
     setUpGround = (scene) => {
-        const groundGeometry = new THREE.PlaneGeometry(TP01_GROUND_SIZE, TP01_GROUND_SIZE, 1, 1);
+        const groundGeometry = new THREE.PlaneGeometry(TP01.GROUND_SIZE, TP01.GROUND_SIZE, 1, 1);
         groundGeometry.rotateX(-Math.PI / 2);
-        const groundMaterial = new THREE.MeshBasicMaterial({ color: TP01_GROUND_RGB });
+        const groundMaterial = new THREE.MeshBasicMaterial({ color: TP01.GROUND_RGB });
         const ground = new THREE.Mesh(groundGeometry, groundMaterial);
         scene.add(ground);
     };
 
     setUpPrinter = (scene) => {
-        const printer = new Printer(TP01_PRINT_SPEED, TP01_PRINTED_OBJECT_MAX_HEIGHT);
-        printer.position.set(TP01_PRINTER_X, TP01_PRINTER_Y, TP01_PRINTER_Z);
+        const printer = new Printer(TP01.PRINT_SPEED, TP01.PRINTED_OBJECT_MAX_HEIGHT);
+        printer.position.set(TP01.PRINTER_X, TP01.PRINTER_Y, TP01.PRINTER_Z);
         this.printer = printer;
         scene.add(printer);
     };
