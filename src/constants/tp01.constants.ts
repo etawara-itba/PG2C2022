@@ -27,3 +27,16 @@ export const PRINTER_Y = 0;
 export const PRINTER_Z = 0;
 export const PRINT_SPEED = 10;
 export const PRINTED_OBJECT_MAX_HEIGHT = 20;
+
+// forklift related
+export const FORKLIFT_MOVEMENT_SPEED = 10;
+export const FORKLIFT_ROTATION_SPEED = 0.1;
+export const FORKLIFT_LIFT_SPEED = 2;
+export const FORKLIFT_CABIN_LENGTH = 30;
+export const FORKLIFT_CABIN_HEIGHT = 9;
+export const FORKLIFT_CABIN_WIDTH = 15;
+export const FORKLIFT_WHEEL_RADIUS = 4;
+export const FORKLIFT_WHEEL_WIDTH = 3;
+export const FORKLIFT_STARTING_X = 0;
+export const FORKLIFT_STARTING_Y = 0;
+export const FORKLIFT_STARTING_Z = 0;

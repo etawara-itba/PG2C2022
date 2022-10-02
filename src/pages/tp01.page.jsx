@@ -6,6 +6,7 @@ import { OrbitControls } from '../scripts/OrbitControls';
 import { GUI } from 'dat.gui';
 import Printer from '../objects/printer.object';
 import i18n from 'i18next';
+import Forklift from "../objects/forklift.object";
 
 class Tp01 extends Component {
     // objects
@@ -23,6 +24,7 @@ class Tp01 extends Component {
         },
     };
     printer = undefined;
+    forklift = undefined;
 
     componentDidMount() {
         const width = this.mount.clientWidth;
@@ -89,6 +91,14 @@ class Tp01 extends Component {
         // call all animate functions here
         const delta = Math.min(this.clock.getDelta(), TP01.MAX_DELTA);
 
+        if (this.forklift !== undefined) {
+            //this.forklift.rotateLeft(delta);
+            //this.forklift.rotateRight(delta);
+            //this.forklift.moveForward(delta);
+            //this.forklift.moveBackwards(delta);
+            //this.forklift.liftUp(delta);
+            this.forklift.liftDown(delta);
+        }
         this.renderScene();
         this.frameId = window.requestAnimationFrame(this.animate);
     };
@@ -166,9 +176,17 @@ class Tp01 extends Component {
         scene.add(printer);
     };
 
+    setUpForklift = (scene) => {
+        const forklift = new Forklift(TP01.FORKLIFT_MOVEMENT_SPEED, TP01.FORKLIFT_ROTATION_SPEED, TP01.FORKLIFT_LIFT_SPEED, TP01.FORKLIFT_CABIN_LENGTH, TP01.FORKLIFT_CABIN_HEIGHT, TP01.FORKLIFT_CABIN_WIDTH, TP01.FORKLIFT_WHEEL_RADIUS, TP01.FORKLIFT_WHEEL_WIDTH);
+        forklift.position.set(TP01.FORKLIFT_STARTING_X, TP01.FORKLIFT_STARTING_Y, TP01.FORKLIFT_STARTING_Z);
+        this.forklift = forklift;
+        scene.add(forklift);
+    }
+
     setUpObjects = (scene) => {
         this.setUpGround(scene);
         this.setUpPrinter(scene);
+        this.setUpForklift(scene);
     };
 
     eventPrintObject = () => {
