@@ -6,7 +6,7 @@ export const generatePrintableMesh = (
     shape: PRINTABLE_SHAPES,
     twistAngle: number,
     height: number,
-    material: THREE.Material,
+    material: THREE.Material | THREE.Material[],
 ): THREE.Mesh => {
     if (height <= 0) throw new Error(`height must be > 0 (height=${height})`);
 

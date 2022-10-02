@@ -4,17 +4,17 @@
   "private": true,
   "description": "Paquete para los TPs de la materia '72.58 - Computación Gráfica' (ITBA 2do cuatrimestre 2022)",
   "scripts": {
-    "format": "prettier --write \"src/**/*.(ts|tsx|js|jsx)\"",
+    "format": "prettier --write ./src",
     "lint": "eslint ./src --ext .tsx,.ts,.jsx,.js --fix",
     "start": "parcel public/index.html --no-hmr",
     "start:dist": "live-server ./dist --no-browser",
-    "build": "npm run clean & parcel build public/index.html --public-url . --no-cache",
+    "build": "npm run clean && parcel build public/index.html --public-url . --no-cache",
     "test": "react-scripts test",
     "test:noWatch": "npm run test -- --watchAll=false",
     "eject": "react-scripts eject",
     "clean": "rimraf ./dist/* ./.**cache",
     "compile": "tsc",
-    "deploy": "npm run build & gh-pages -d dist -b gh-pages"
+    "deploy": "npm run build && gh-pages -d dist -b gh-pages"
   },
   "repository": {
     "type": "git",
@@ -23,12 +23,6 @@
   "homepage": "https://etawara-itba.github.io",
   "author": "Enrique Tawara <etawara@itba.edu.ar>",
   "license": "ISC",
-  "lint-staged": {
-    "*.{tsx,ts,jsx,js}": [
-      "eslint --cache --fix",
-      "prettier --write"
-    ]
-  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -44,6 +38,7 @@
   "dependencies": {
     "bootstrap": "^5.2.1",
     "dat.gui": "^0.7.9",
+    "glob-parent": ">=5.1.2",
     "i18next": "^21.9.2",
     "jsdom": ">=16.5.0",
     "nth-check": ">=2.0.1",

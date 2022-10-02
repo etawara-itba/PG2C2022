@@ -89,6 +89,24 @@ class OrbitControls extends EventDispatcher {
         // public methods
         //
 
+        // CUSTOM PUBLIC FUNCTIONS
+
+        this.handleMouseMoveRotate = function (event) {
+            return handleMouseMoveRotate(event);
+        };
+
+        this.dollyIn = function () {
+            dollyIn(getZoomScale());
+            scope.update();
+        };
+
+        this.dollyOut = function () {
+            dollyOut(getZoomScale());
+            scope.update();
+        };
+
+        // END CUSTOM PUBLIC FUNCTIONS
+
         this.getPolarAngle = function () {
             return spherical.phi;
         };

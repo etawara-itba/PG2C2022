@@ -7,14 +7,17 @@ import { GUI } from 'dat.gui';
 import Printer from '../objects/printer.object';
 import i18n from 'i18next';
 import Forklift from "../objects/forklift.object";
+import { KEY_CONTROLS_DOLLY_IN, KEY_CONTROLS_DOLLY_OUT } from '../constants/tp01.constants';
 
 class Tp01 extends Component {
     // objects
     ui = undefined;
     clock = undefined;
-    cameras = [];
+    cameraControlPair = [];
     currentCamera = undefined;
+    currentControls = undefined;
     scene = undefined;
+    keyStates = [];
     settings = {
         shape: TP01.SETTINGS_DEFAULT_SHAPE,
         height: TP01.SETTINGS_DEFAULT_HEIGHT,
@@ -40,9 +43,6 @@ class Tp01 extends Component {
         renderer.setSize(width, height);
         this.renderer = renderer;
 
-        // camera logic
-        this.setUpCameras(width / height);
-
         // ui logic
         this.setUpUI();
 
@@ -51,6 +51,12 @@ class Tp01 extends Component {
 
         // set up scene objects
         this.setUpObjects(scene);
+
+        // camera logic
+        this.setUpCameras(width / height);
+
+        // set up controls
+        this.setUpControls(document);
 
         // other stuff
         window.addEventListener('resize', this.handleResize);
@@ -91,14 +97,12 @@ class Tp01 extends Component {
         // call all animate functions here
         const delta = Math.min(this.clock.getDelta(), TP01.MAX_DELTA);
 
-        if (this.forklift !== undefined) {
-            //this.forklift.rotateLeft(delta);
-            //this.forklift.rotateRight(delta);
-            //this.forklift.moveForward(delta);
-            //this.forklift.moveBackwards(delta);
-            //this.forklift.liftUp(delta);
-            this.forklift.liftDown(delta);
-        }
+        // controls
+        this.animateKeyPress();
+
+        // printer related
+        this.printer.animate(delta);
+
         this.renderScene();
         this.frameId = window.requestAnimationFrame(this.animate);
     };
@@ -151,14 +155,59 @@ class Tp01 extends Component {
         const centerCamera = new THREE.PerspectiveCamera(TP01.CAMERA_FOV, aspect, 0.1, 1000);
         centerCamera.position.set(TP01.CENTER_CAMERA_X, TP01.CENTER_CAMERA_Y, TP01.CENTER_CAMERA_Z);
         const centerControls = new OrbitControls(centerCamera, this.renderer.domElement);
-        centerControls.listenToKeyEvents(window);
+        centerControls.enableRotate = false;
         centerControls.enablePan = false;
-        centerControls.minDistance = TP01.CAMERA_CONTROLS_MIN_DOLLY;
-        centerControls.maxDistance = TP01.CAMERA_CONTROLS_MAX_DOLLY;
+        centerControls.minDistance = TP01.CENTER_CAMERA_CONTROLS_MIN_DOLLY;
+        centerControls.maxDistance = TP01.CENTER_CAMERA_CONTROLS_MAX_DOLLY;
+        this.cameraControlPair.push({
+            camera: centerCamera,
+            controls: centerControls,
+        });
 
-        this.cameras.push(centerCamera);
+        // printer camera
+        const printerCamera = new THREE.PerspectiveCamera(TP01.CAMERA_FOV, aspect, 0.1, 1000);
+        printerCamera.position.set(TP01.PRINTER_CAMERA_X, TP01.PRINTER_CAMERA_Y, TP01.PRINTER_CAMERA_Z);
+        printerCamera.lookAt(TP01.PRINTER_X, TP01.PRINTER_CAMERA_Y, TP01.PRINTER_Z);
+        const printerControls = new OrbitControls(printerCamera, this.renderer.domElement);
+        centerControls.enableRotate = false;
+        printerControls.enablePan = false;
+        printerControls.minDistance = TP01.PRINTER_CAMERA_CONTROLS_MIN_DOLLY;
+        printerControls.maxDistance = TP01.PRINTER_CAMERA_CONTROLS_MAX_DOLLY;
+        printerControls.target = new THREE.Vector3(TP01.PRINTER_X, TP01.PRINTER_CAMERA_Y, TP01.PRINTER_Z);
+        this.cameraControlPair.push({
+            camera: printerCamera,
+            controls: printerControls,
+        });
 
+        // current camera
         this.currentCamera = centerCamera;
+        this.currentControls = centerControls;
+    };
+
+    setUpControls = (document) => {
+        // key up & keydown
+        document.addEventListener('keydown', (event) => {
+            this.keyStates[event.code] = true;
+        });
+        document.addEventListener('keyup', (event) => {
+            this.keyStates[event.code] = false;
+        });
+        document.body.addEventListener('mousedown', (e) => {
+            switch (e.button) {
+                case 2:
+                    // right click: invert control enable
+                    this.currentControls.enabled = !this.currentControls.enabled;
+                    break;
+                default:
+                // Nothing
+            }
+        });
+        // mouse movement
+        document.body.addEventListener('mousemove', (e) => {
+            if (this.currentControls.enabled) {
+                this.currentControls.handleMouseMoveRotate(e);
+            }
+        });
     };
 
     setUpGround = (scene) => {
@@ -203,6 +252,25 @@ class Tp01 extends Component {
             );
         } catch (err) {
             console.log(err.message);
+        }
+    };
+
+    animateKeyPress = () => {
+        // camera related, select camera prioritizing lowest i
+        for (let i = 0; i < Math.min(this.cameraControlPair.length, 8); i++) {
+            const keyEventString = `Digit${i + 1}`;
+            if (!this.keyStates[keyEventString]) continue;
+
+            this.currentCamera = this.cameraControlPair[i].camera;
+            this.currentControls = this.cameraControlPair[i].controls;
+            break;
+        }
+        // controls related, dolly only if either
+        if (this.keyStates[KEY_CONTROLS_DOLLY_IN] && !this.keyStates[KEY_CONTROLS_DOLLY_OUT]) {
+            if (this.currentControls.enabled) this.currentControls.dollyIn();
+        }
+        if (!this.keyStates[KEY_CONTROLS_DOLLY_IN] && this.keyStates[KEY_CONTROLS_DOLLY_OUT]) {
+            if (this.currentControls.enabled) this.currentControls.dollyOut();
         }
     };
 
