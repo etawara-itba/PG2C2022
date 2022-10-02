@@ -4,7 +4,7 @@
   "private": true,
   "description": "Paquete para los TPs de la materia '72.58 - Computación Gráfica' (ITBA 2do cuatrimestre 2022)",
   "scripts": {
-    "format": "prettier --write \"src/**/*.(ts|tsx|js|jsx)\"",
+    "format": "prettier --write ./src",
     "lint": "eslint ./src --ext .tsx,.ts,.jsx,.js --fix",
     "start": "parcel public/index.html --no-hmr",
     "start:dist": "live-server ./dist --no-browser",
@@ -23,12 +23,6 @@
   "homepage": "https://etawara-itba.github.io",
   "author": "Enrique Tawara <etawara@itba.edu.ar>",
   "license": "ISC",
-  "lint-staged": {
-    "*.{tsx,ts,jsx,js}": [
-      "eslint --cache --fix",
-      "prettier --write"
-    ]
-  },
   "browserslist": {
     "production": [
       ">0.2%",
