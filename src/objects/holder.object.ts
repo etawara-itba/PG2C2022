@@ -6,7 +6,7 @@ class Holder extends THREE.Object3D {
     receive(gift: THREE.Object3D) {
         if (this.hasObject()) throw new Error('already has object');
         if (this.locked) throw new Error('holder is locked');
-        this.attach(gift);
+        this.add(gift);
         gift.position.set(0, 0, 0);
     }
 

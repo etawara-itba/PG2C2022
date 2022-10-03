@@ -1,0 +1,17 @@
+export const CABIN_LENGTH = 30;
+export const CABIN_HEIGHT = 9;
+export const CABIN_WIDTH = 15;
+export const WHEEL_RADIUS = 4;
+export const WHEEL_TIRE_RADIUS = 3;
+export const WHEEL_HOLE_RADIUS = 2.5;
+export const WHEEL_WIDTH = 5;
+export const WHEEL_HOLE_WIDTH = 4;
+export const CAMERA_FRONT_X = 0;
+export const CAMERA_FRONT_Y = CABIN_HEIGHT + 10;
+export const CAMERA_FRONT_Z = 0;
+export const CAMERA_BACK_X = CAMERA_FRONT_X - 50;
+export const CAMERA_BACK_Y = CAMERA_FRONT_Y + 16;
+export const CAMERA_BACK_Z = CAMERA_FRONT_Z;
+export const CAMERA_SIDE_X = CAMERA_FRONT_X;
+export const CAMERA_SIDE_Y = CAMERA_FRONT_Y;
+export const CAMERA_SIDE_Z = CAMERA_FRONT_Z - 60;

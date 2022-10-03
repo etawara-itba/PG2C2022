@@ -1,3 +1,4 @@
+import * as THREE from 'three';
 import Holder from './holder.object';
 
 class Grabber extends Holder {
@@ -10,18 +11,19 @@ class Grabber extends Holder {
 
     interactClosest(holders: Holder[]) {
         if (this.locked) return;
-        let closesHolder: Holder | undefined;
+        const myWorldPosition = this.getWorldPosition(new THREE.Vector3());
+        let closestHolder: Holder | undefined;
         let currentClosestDistance = Infinity;
         for (const holder of holders) {
             if (this === holder) continue;
-            const distance = this.position.distanceTo(holder.position);
+            const distance = myWorldPosition.distanceTo(holder.getWorldPosition(new THREE.Vector3()));
             if (distance < this.maxInteractionDistance && distance < currentClosestDistance && !holder.getLock()) {
                 currentClosestDistance = distance;
-                closesHolder = holder;
+                closestHolder = holder;
             }
         }
 
-        if (closesHolder) this.interact(closesHolder);
+        if (closestHolder) this.interact(closestHolder);
     }
 
     interact(holder: Holder) {

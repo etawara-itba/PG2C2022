@@ -1,6 +1,13 @@
 // control related
 export const KEY_CONTROLS_DOLLY_IN = 'KeyO';
 export const KEY_CONTROLS_DOLLY_OUT = 'KeyP';
+export const KEY_FORKLIFT_FORWARD = 'KeyW';
+export const KEY_FORKLIFT_BACKWARDS = 'KeyS';
+export const KEY_FORKLIFT_LEFT = 'KeyA';
+export const KEY_FORKLIFT_RIGHT = 'KeyD';
+export const KEY_FORKLIFT_LIFT_UP = 'KeyQ';
+export const KEY_FORKLIFT_LIFT_DOWN = 'KeyE';
+export const KEY_FORKLIFT_GRABBER = 'KeyG';
 
 // ui related
 export const SETTINGS_DEFAULT_SHAPE = 'A1';
@@ -25,20 +32,24 @@ export const PRINT_SPEED = 10;
 export const PRINTED_OBJECT_MAX_HEIGHT = 20;
 
 // forklift related
-export const FORKLIFT_MOVEMENT_SPEED = 10;
-export const FORKLIFT_ROTATION_SPEED = 0.1;
-export const FORKLIFT_LIFT_SPEED = 2;
-export const FORKLIFT_CABIN_LENGTH = 30;
-export const FORKLIFT_CABIN_HEIGHT = 9;
-export const FORKLIFT_CABIN_WIDTH = 15;
-export const FORKLIFT_WHEEL_RADIUS = 4;
-export const FORKLIFT_WHEEL_WIDTH = 3;
+export const FORKLIFT_MOVEMENT_SPEED = 50;
+export const FORKLIFT_ROTATION_SPEED = Math.PI / 2;
+export const FORKLIFT_LIFT_SPEED = 15;
+export const FORKLIFT_MAX_INTERACTION_DISTANCE = 25;
 export const FORKLIFT_STARTING_X = 0;
 export const FORKLIFT_STARTING_Y = 0;
 export const FORKLIFT_STARTING_Z = 0;
+export const FORKLIFT_SCALE_FACTOR = 2;
+
+// shelf related
+export const SHELF_X = 100;
+export const SHELF_Y = 0;
+export const SHELF_Z = 0;
 
 // camera related
 export const CAMERA_FOV = 75;
+export const CAMERA_DEFAULT_NEAR = 0.1;
+export const CAMERA_DEFAULT_FAR = 1000;
 export const CENTER_CAMERA_X = 0;
 export const CENTER_CAMERA_Y = 80;
 export const CENTER_CAMERA_Z = 200;
@@ -49,3 +60,8 @@ export const PRINTER_CAMERA_Y = PRINTER_Y + 50;
 export const PRINTER_CAMERA_Z = PRINTER_Z + 2 * PRINTED_OBJECT_MAX_HEIGHT;
 export const PRINTER_CAMERA_CONTROLS_MIN_DOLLY = 50;
 export const PRINTER_CAMERA_CONTROLS_MAX_DOLLY = 200;
+export const SHELF_CAMERA_X = SHELF_X;
+export const SHELF_CAMERA_Y = SHELF_Y + 50;
+export const SHELF_CAMERA_Z = SHELF_Z + 2 * PRINTED_OBJECT_MAX_HEIGHT;
+export const SHELF_CAMERA_CONTROLS_MIN_DOLLY = 50;
+export const SHELF_CAMERA_CONTROLS_MAX_DOLLY = 200;

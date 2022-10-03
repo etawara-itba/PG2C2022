@@ -10,7 +10,7 @@ class Printer extends THREE.Group {
     private printedObjectHeight: number | undefined;
     private _isPrinting = false;
     private printedHeight = 0;
-    private holder: Holder = new Holder();
+    private _holder: Holder = new Holder();
 
     public constructor(printSpeed: number, maxHandHeight: number) {
         super();
@@ -28,9 +28,9 @@ class Printer extends THREE.Group {
         this.printedObjectHeight = height;
 
         // manage object on holder
-        this.holder.setLock(false);
+        this._holder.setLock(false);
         try {
-            const previousObject = this.holder.give() as THREE.Object3D & {
+            const previousObject = this._holder.give() as THREE.Object3D & {
                 geometry?: THREE.BufferGeometry;
                 material?: THREE.Material | THREE.Material[];
             };
@@ -49,8 +49,8 @@ class Printer extends THREE.Group {
         } catch (_) {
             // no need to print catch error
         }
-        this.holder.receive(printedObject);
-        this.holder.setLock(true);
+        this._holder.receive(printedObject);
+        // this._holder.setLock(true);
     }
 
     animate(delta: number): void {
@@ -76,6 +76,10 @@ class Printer extends THREE.Group {
 
     set isPrinting(value: boolean) {
         this._isPrinting = value;
+    }
+
+    get holder(): Holder {
+        return this._holder;
     }
 
     _initMesh() {
@@ -104,8 +108,8 @@ class Printer extends THREE.Group {
         this.add(baseMesh);
 
         // HOLDER
-        this.holder.position.set(0, PRINTER_HOLE_HEIGHT, 0);
-        this.add(this.holder);
+        this._holder.position.set(0, PRINTER_HOLE_HEIGHT, 0);
+        this.add(this._holder);
     }
 }
 export default Printer;

@@ -6,8 +6,7 @@ import { OrbitControls } from '../scripts/OrbitControls';
 import { GUI } from 'dat.gui';
 import Printer from '../objects/printer.object';
 import i18n from 'i18next';
-import Forklift from "../objects/forklift.object";
-import { KEY_CONTROLS_DOLLY_IN, KEY_CONTROLS_DOLLY_OUT } from '../constants/tp01.constants';
+import Forklift from '../objects/forklift.object';
 
 class Tp01 extends Component {
     // objects
@@ -18,6 +17,7 @@ class Tp01 extends Component {
     currentControls = undefined;
     scene = undefined;
     keyStates = [];
+    keyDownStates = [];
     settings = {
         shape: TP01.SETTINGS_DEFAULT_SHAPE,
         height: TP01.SETTINGS_DEFAULT_HEIGHT,
@@ -26,12 +26,14 @@ class Tp01 extends Component {
             this.eventPrintObject();
         },
     };
+    holders = [];
     printer = undefined;
     forklift = undefined;
 
     componentDidMount() {
         const width = this.mount.clientWidth;
         const height = this.mount.clientHeight;
+        const aspect = width / height;
 
         // scene creation
         const scene = new THREE.Scene();
@@ -50,10 +52,10 @@ class Tp01 extends Component {
         this.setUpLightning(scene);
 
         // set up scene objects
-        this.setUpObjects(scene);
+        this.setUpObjects(scene, aspect);
 
         // camera logic
-        this.setUpCameras(width / height);
+        this.setUpCameras(aspect);
 
         // set up controls
         this.setUpControls(document);
@@ -98,7 +100,7 @@ class Tp01 extends Component {
         const delta = Math.min(this.clock.getDelta(), TP01.MAX_DELTA);
 
         // controls
-        this.animateKeyPress();
+        this.animateKeyPress(delta);
 
         // printer related
         this.printer.animate(delta);
@@ -152,7 +154,12 @@ class Tp01 extends Component {
 
     setUpCameras = (aspect) => {
         // center camera
-        const centerCamera = new THREE.PerspectiveCamera(TP01.CAMERA_FOV, aspect, 0.1, 1000);
+        const centerCamera = new THREE.PerspectiveCamera(
+            TP01.CAMERA_FOV,
+            aspect,
+            TP01.CAMERA_DEFAULT_NEAR,
+            TP01.CAMERA_DEFAULT_FAR,
+        );
         centerCamera.position.set(TP01.CENTER_CAMERA_X, TP01.CENTER_CAMERA_Y, TP01.CENTER_CAMERA_Z);
         const centerControls = new OrbitControls(centerCamera, this.renderer.domElement);
         centerControls.enableRotate = false;
@@ -165,11 +172,16 @@ class Tp01 extends Component {
         });
 
         // printer camera
-        const printerCamera = new THREE.PerspectiveCamera(TP01.CAMERA_FOV, aspect, 0.1, 1000);
+        const printerCamera = new THREE.PerspectiveCamera(
+            TP01.CAMERA_FOV,
+            aspect,
+            TP01.CAMERA_DEFAULT_NEAR,
+            TP01.CAMERA_DEFAULT_FAR,
+        );
         printerCamera.position.set(TP01.PRINTER_CAMERA_X, TP01.PRINTER_CAMERA_Y, TP01.PRINTER_CAMERA_Z);
         printerCamera.lookAt(TP01.PRINTER_X, TP01.PRINTER_CAMERA_Y, TP01.PRINTER_Z);
         const printerControls = new OrbitControls(printerCamera, this.renderer.domElement);
-        centerControls.enableRotate = false;
+        printerControls.enableRotate = false;
         printerControls.enablePan = false;
         printerControls.minDistance = TP01.PRINTER_CAMERA_CONTROLS_MIN_DOLLY;
         printerControls.maxDistance = TP01.PRINTER_CAMERA_CONTROLS_MAX_DOLLY;
@@ -177,6 +189,40 @@ class Tp01 extends Component {
         this.cameraControlPair.push({
             camera: printerCamera,
             controls: printerControls,
+        });
+
+        // shelf camera
+        const shelfCamera = new THREE.PerspectiveCamera(
+            TP01.CAMERA_FOV,
+            aspect,
+            TP01.CAMERA_DEFAULT_NEAR,
+            TP01.CAMERA_DEFAULT_FAR,
+        );
+        shelfCamera.position.set(TP01.SHELF_CAMERA_X, TP01.SHELF_CAMERA_Y, TP01.SHELF_CAMERA_Z);
+        shelfCamera.lookAt(TP01.SHELF_X, TP01.SHELF_CAMERA_Y, TP01.SHELF_Z);
+        const shelfControls = new OrbitControls(shelfCamera, this.renderer.domElement);
+        centerControls.enableRotate = false;
+        shelfControls.enablePan = false;
+        shelfControls.minDistance = TP01.SHELF_CAMERA_CONTROLS_MIN_DOLLY;
+        shelfControls.maxDistance = TP01.SHELF_CAMERA_CONTROLS_MAX_DOLLY;
+        shelfControls.target = new THREE.Vector3(TP01.SHELF_X, TP01.SHELF_CAMERA_Y, TP01.SHELF_Z);
+        this.cameraControlPair.push({
+            camera: shelfCamera,
+            controls: shelfControls,
+        });
+
+        // forklift cameras
+        this.cameraControlPair.push({
+            camera: this.forklift.getFrontCamera(),
+            controls: null,
+        });
+        this.cameraControlPair.push({
+            camera: this.forklift.getBackCamera(),
+            controls: null,
+        });
+        this.cameraControlPair.push({
+            camera: this.forklift.getSideCamera(),
+            controls: null,
         });
 
         // current camera
@@ -187,6 +233,7 @@ class Tp01 extends Component {
     setUpControls = (document) => {
         // key up & keydown
         document.addEventListener('keydown', (event) => {
+            this.keyDownStates[event.code] = true;
             this.keyStates[event.code] = true;
         });
         document.addEventListener('keyup', (event) => {
@@ -196,7 +243,7 @@ class Tp01 extends Component {
             switch (e.button) {
                 case 2:
                     // right click: invert control enable
-                    this.currentControls.enabled = !this.currentControls.enabled;
+                    if (this.currentControls) this.currentControls.enabled = !this.currentControls.enabled;
                     break;
                 default:
                 // Nothing
@@ -204,7 +251,7 @@ class Tp01 extends Component {
         });
         // mouse movement
         document.body.addEventListener('mousemove', (e) => {
-            if (this.currentControls.enabled) {
+            if (this.currentControls?.enabled) {
                 this.currentControls.handleMouseMoveRotate(e);
             }
         });
@@ -222,20 +269,34 @@ class Tp01 extends Component {
         const printer = new Printer(TP01.PRINT_SPEED, TP01.PRINTED_OBJECT_MAX_HEIGHT);
         printer.position.set(TP01.PRINTER_X, TP01.PRINTER_Y, TP01.PRINTER_Z);
         this.printer = printer;
+        this.holders.push(printer.holder);
         scene.add(printer);
     };
 
-    setUpForklift = (scene) => {
-        const forklift = new Forklift(TP01.FORKLIFT_MOVEMENT_SPEED, TP01.FORKLIFT_ROTATION_SPEED, TP01.FORKLIFT_LIFT_SPEED, TP01.FORKLIFT_CABIN_LENGTH, TP01.FORKLIFT_CABIN_HEIGHT, TP01.FORKLIFT_CABIN_WIDTH, TP01.FORKLIFT_WHEEL_RADIUS, TP01.FORKLIFT_WHEEL_WIDTH);
+    setUpForklift = (scene, aspect) => {
+        const forklift = new Forklift(
+            TP01.FORKLIFT_MOVEMENT_SPEED,
+            TP01.FORKLIFT_ROTATION_SPEED,
+            TP01.FORKLIFT_LIFT_SPEED,
+            TP01.FORKLIFT_MAX_INTERACTION_DISTANCE,
+            TP01.CAMERA_FOV,
+            aspect,
+            TP01.CAMERA_DEFAULT_NEAR,
+            TP01.CAMERA_DEFAULT_FAR,
+        );
         forklift.position.set(TP01.FORKLIFT_STARTING_X, TP01.FORKLIFT_STARTING_Y, TP01.FORKLIFT_STARTING_Z);
+        forklift.rotateY(Math.PI);
+        forklift.scale.multiplyScalar(TP01.FORKLIFT_SCALE_FACTOR);
+        forklift.getGrabber().scale.divideScalar(TP01.FORKLIFT_SCALE_FACTOR);
         this.forklift = forklift;
+        this.holders.push(forklift.getGrabber());
         scene.add(forklift);
-    }
+    };
 
-    setUpObjects = (scene) => {
+    setUpObjects = (scene, aspect) => {
         this.setUpGround(scene);
         this.setUpPrinter(scene);
-        this.setUpForklift(scene);
+        this.setUpForklift(scene, aspect);
     };
 
     eventPrintObject = () => {
@@ -255,7 +316,7 @@ class Tp01 extends Component {
         }
     };
 
-    animateKeyPress = () => {
+    animateKeyPress = (delta) => {
         // camera related, select camera prioritizing lowest i
         for (let i = 0; i < Math.min(this.cameraControlPair.length, 8); i++) {
             const keyEventString = `Digit${i + 1}`;
@@ -266,12 +327,38 @@ class Tp01 extends Component {
             break;
         }
         // controls related, dolly only if either
-        if (this.keyStates[KEY_CONTROLS_DOLLY_IN] && !this.keyStates[KEY_CONTROLS_DOLLY_OUT]) {
-            if (this.currentControls.enabled) this.currentControls.dollyIn();
+        if (this.keyStates[TP01.KEY_CONTROLS_DOLLY_IN] && !this.keyStates[TP01.KEY_CONTROLS_DOLLY_OUT]) {
+            if (this.currentControls?.enabled) this.currentControls.dollyIn();
         }
-        if (!this.keyStates[KEY_CONTROLS_DOLLY_IN] && this.keyStates[KEY_CONTROLS_DOLLY_OUT]) {
-            if (this.currentControls.enabled) this.currentControls.dollyOut();
+        if (!this.keyStates[TP01.KEY_CONTROLS_DOLLY_IN] && this.keyStates[TP01.KEY_CONTROLS_DOLLY_OUT]) {
+            if (this.currentControls?.enabled) this.currentControls.dollyOut();
         }
+
+        // forklift related
+        if (this.keyStates[TP01.KEY_FORKLIFT_FORWARD] && !this.keyStates[TP01.KEY_FORKLIFT_BACKWARDS]) {
+            this.forklift.moveForward(delta);
+        }
+        if (!this.keyStates[TP01.KEY_FORKLIFT_FORWARD] && this.keyStates[TP01.KEY_FORKLIFT_BACKWARDS]) {
+            this.forklift.moveBackwards(delta);
+        }
+        if (this.keyStates[TP01.KEY_FORKLIFT_LEFT] && !this.keyStates[TP01.KEY_FORKLIFT_RIGHT]) {
+            this.forklift.rotateLeft(delta);
+        }
+        if (!this.keyStates[TP01.KEY_FORKLIFT_LEFT] && this.keyStates[TP01.KEY_FORKLIFT_RIGHT]) {
+            this.forklift.rotateRight(delta);
+        }
+        if (this.keyStates[TP01.KEY_FORKLIFT_LIFT_UP] && !this.keyStates[TP01.KEY_FORKLIFT_LIFT_DOWN]) {
+            this.forklift.liftUp(delta);
+        }
+        if (!this.keyStates[TP01.KEY_FORKLIFT_LIFT_UP] && this.keyStates[TP01.KEY_FORKLIFT_LIFT_DOWN]) {
+            this.forklift.liftDown(delta);
+        }
+        if (this.keyDownStates[TP01.KEY_FORKLIFT_GRABBER]) {
+            this.forklift.interactGrabber(this.holders);
+        }
+
+        // reset the keyDownStates so they trigger only once
+        this.keyDownStates = [];
     };
 
     // render
