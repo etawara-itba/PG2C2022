@@ -258,12 +258,37 @@ class Tp01 extends Component {
         });
     };
 
-    setUpGround = (scene) => {
+    setUpStage = (scene) => {
+        // ground
         const groundGeometry = new THREE.PlaneGeometry(TP01.GROUND_SIZE, TP01.GROUND_SIZE, 1, 1);
         groundGeometry.rotateX(-Math.PI / 2);
         const groundMaterial = new THREE.MeshBasicMaterial({ color: TP01.GROUND_RGB });
         const ground = new THREE.Mesh(groundGeometry, groundMaterial);
         scene.add(ground);
+
+        // roof
+        const roofShape = new THREE.Shape();
+        roofShape.moveTo(-TP01.GROUND_SIZE / 2, -1);
+        roofShape.lineTo(-TP01.GROUND_SIZE / 2, TP01.ROOF_HEIGHT);
+        roofShape.bezierCurveTo(
+            -TP01.GROUND_SIZE / 2,
+            TP01.ROOF_CP,
+            TP01.GROUND_SIZE / 2,
+            TP01.ROOF_CP,
+            TP01.GROUND_SIZE / 2,
+            TP01.ROOF_HEIGHT,
+        );
+        roofShape.lineTo(TP01.GROUND_SIZE / 2, -1);
+        const extrudeSettings = {
+            steps: 10,
+            depth: TP01.GROUND_SIZE,
+            bevelEnabled: false,
+        };
+        const roofGeometry = new THREE.ExtrudeGeometry(roofShape, extrudeSettings);
+        const roofMaterial = new THREE.MeshBasicMaterial({ color: TP01.ROOF_RGB, side: THREE.BackSide });
+        const roof = new THREE.Mesh(roofGeometry, roofMaterial);
+        roof.position.z -= TP01.GROUND_SIZE / 2;
+        scene.add(roof);
     };
 
     setUpPrinter = (scene) => {
@@ -299,7 +324,7 @@ class Tp01 extends Component {
     };
 
     setUpObjects = (scene, aspect) => {
-        this.setUpGround(scene);
+        this.setUpStage(scene);
         this.setUpPrinter(scene);
         this.setUpForklift(scene, aspect);
     };

@@ -20,9 +20,12 @@ export const SETTINGS_MAX_TWIST_ANGLE = 360;
 
 // scene related
 export const MAX_DELTA = 1.0 / 24;
+export const ROOF_HEIGHT = 100;
+export const ROOF_CP = 300;
 export const GROUND_SIZE = 500;
-export const SKY_RGB = '#C5C5C5';
+export const SKY_RGB = '#EEEEEE';
 export const GROUND_RGB = '#8B7675';
+export const ROOF_RGB = '#C5C5C5';
 
 // printer related
 export const PRINTER_X = -100;
@@ -50,7 +53,7 @@ export const SHELF_Z = 0;
 // camera related
 export const CAMERA_FOV = 75;
 export const CAMERA_DEFAULT_NEAR = 0.1;
-export const CAMERA_DEFAULT_FAR = 1000;
+export const CAMERA_DEFAULT_FAR = 1200;
 export const CENTER_CAMERA_X = 0;
 export const CENTER_CAMERA_Y = 80;
 export const CENTER_CAMERA_Z = 200;
