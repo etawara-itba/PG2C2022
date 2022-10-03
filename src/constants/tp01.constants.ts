@@ -12,7 +12,7 @@ export const KEY_FORKLIFT_GRABBER = 'KeyG';
 // ui related
 export const SETTINGS_DEFAULT_SHAPE = 'A1';
 export const SETTINGS_MIN_HEIGHT = 0.1;
-export const SETTINGS_MAX_HEIGHT = 20;
+export const SETTINGS_MAX_HEIGHT = 30;
 export const SETTINGS_DEFAULT_HEIGHT = 20;
 export const SETTINGS_DEFAULT_TWIST_ANGLE = 90;
 export const SETTINGS_MIN_TWIST_ANGLE = 0;
@@ -28,8 +28,9 @@ export const GROUND_RGB = '#8B7675';
 export const PRINTER_X = -100;
 export const PRINTER_Y = 0;
 export const PRINTER_Z = 0;
-export const PRINT_SPEED = 10;
-export const PRINTED_OBJECT_MAX_HEIGHT = 20;
+export const PRINTER_HAND_MOVEMENT_SPEED = 20;
+export const PRINTER_PRINT_SLOWDOWN = 0.6;
+export const PRINTED_OBJECT_MAX_HEIGHT = 30;
 
 // forklift related
 export const FORKLIFT_MOVEMENT_SPEED = 50;

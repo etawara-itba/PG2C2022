@@ -43,6 +43,7 @@ class Tp01 extends Component {
         const renderer = new THREE.WebGLRenderer({ antialias: true });
         renderer.setClearColor(TP01.SKY_RGB);
         renderer.setSize(width, height);
+        renderer.localClippingEnabled = true;
         this.renderer = renderer;
 
         // ui logic
@@ -266,7 +267,11 @@ class Tp01 extends Component {
     };
 
     setUpPrinter = (scene) => {
-        const printer = new Printer(TP01.PRINT_SPEED, TP01.PRINTED_OBJECT_MAX_HEIGHT);
+        const printer = new Printer(
+            TP01.PRINTER_HAND_MOVEMENT_SPEED,
+            TP01.PRINTER_PRINT_SLOWDOWN,
+            TP01.PRINTED_OBJECT_MAX_HEIGHT,
+        );
         printer.position.set(TP01.PRINTER_X, TP01.PRINTER_Y, TP01.PRINTER_Z);
         this.printer = printer;
         this.holders.push(printer.holder);

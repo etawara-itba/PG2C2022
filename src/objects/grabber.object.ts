@@ -27,10 +27,11 @@ class Grabber extends Holder {
     }
 
     interact(holder: Holder) {
+        if (this.locked || holder.getLock()) return;
         try {
-            if (this.hasObject()) {
+            if (this.hasObject() && !holder.hasObject()) {
                 holder.receive(this.give());
-            } else {
+            } else if (!this.hasObject() && holder.hasObject()) {
                 this.receive(holder.give());
             }
         } catch (err) {
