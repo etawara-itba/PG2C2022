@@ -66,13 +66,13 @@ class Printer extends THREE.Group {
         this.add(baseMesh);
 
         // HOLDER
-        this._holder.position.set(0, PRINTER_HOLE_HEIGHT, 0);
+        this._holder.position.set(0, PRINTER_BASE_HEIGHT, 0);
         this.add(this._holder);
 
         // ELEVATOR: ROD + PRINTING HAND
         const PRINTER_ELEVATOR_DISPLACEMENT = (-1 * (PRINTER_BASE_RADIUS + PRINTER_HOLE_RADIUS)) / 2;
         const elevator = new THREE.Group();
-        elevator.position.set(PRINTER_ELEVATOR_DISPLACEMENT, PRINTER_BASE_HEIGHT, 0);
+        elevator.position.set(PRINTER_ELEVATOR_DISPLACEMENT, this._holder.position.y, 0);
         this.add(elevator);
 
         // ROD
