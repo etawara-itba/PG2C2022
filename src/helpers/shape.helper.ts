@@ -64,6 +64,14 @@ const getA1Shape = (): THREE.Shape => {
         A1_INNER_WIDTH,
         A1_HEIGHT - (A1_OUTER_HEIGHT + A1_VALLEY_HEIGHT),
     );
+    shape.bezierCurveTo(
+        A1_INNER_WIDTH,
+        A1_HEIGHT - A1_OUTER_HEIGHT,
+        A1_OUTER_WIDTH,
+        A1_HEIGHT - (A1_OUTER_HEIGHT + A1_VALLEY_HEIGHT),
+        A1_OUTER_WIDTH,
+        A1_HEIGHT - A1_OUTER_HEIGHT,
+    );
     shape.lineTo(A1_OUTER_WIDTH, A1_HEIGHT);
     shape.lineTo(0, A1_HEIGHT);
 

@@ -7,6 +7,7 @@ import { GUI } from 'dat.gui';
 import Printer from '../objects/printer.object';
 import i18n from 'i18next';
 import Forklift from '../objects/forklift.object';
+import Shelf from '../objects/shelf.object';
 
 class Tp01 extends Component {
     // objects
@@ -149,7 +150,7 @@ class Tp01 extends Component {
         dirLight2.position.set(-1, -1, -1);
         scene.add(dirLight2);
 
-        const ambientLight = new THREE.AmbientLight(0x222222);
+        const ambientLight = new THREE.AmbientLight(0x454545);
         scene.add(ambientLight);
     };
 
@@ -323,10 +324,27 @@ class Tp01 extends Component {
         scene.add(forklift);
     };
 
+    setUpShelf = (scene) => {
+        const shelf = new Shelf(
+            TP01.SHELF_ROWS,
+            TP01.SHELF_COLUMNS,
+            TP01.SHELF_SPACE_LENGTH,
+            TP01.SHELF_SPACE_WIDTH,
+            TP01.SHELF_SPACE_HEIGHT,
+        );
+        shelf.position.set(TP01.SHELF_X, TP01.SHELF_Y, TP01.SHELF_Z);
+        shelf.rotateY(Math.PI / 2);
+        shelf.getHolders().forEach((h) => {
+            this.holders.push(h);
+        });
+        scene.add(shelf);
+    };
+
     setUpObjects = (scene, aspect) => {
         this.setUpStage(scene);
         this.setUpPrinter(scene);
         this.setUpForklift(scene, aspect);
+        this.setUpShelf(scene);
     };
 
     eventPrintObject = () => {
