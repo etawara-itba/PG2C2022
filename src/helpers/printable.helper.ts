@@ -72,21 +72,27 @@ const generateExtrudeGeometry = (shape: PRINTABLE_SHAPES, twistAngle: number): T
 const twistGeometry = (geometry: THREE.BufferGeometry, twistAmount: number): void => {
     const quaternion = new THREE.Quaternion();
     const positionAttribute = geometry.getAttribute('position');
-    const point = new THREE.Vector3();
+    const normalAttribute = geometry.getAttribute('normal');
+    const positionPoint = new THREE.Vector3();
+    const normalPoint = new THREE.Vector3();
 
     for (let i = 0; i < positionAttribute.count; i++) {
-        point.fromBufferAttribute(positionAttribute, i);
+        positionPoint.fromBufferAttribute(positionAttribute, i);
+        normalPoint.fromBufferAttribute(normalAttribute, i);
 
         // a single vertex Y position
-        const yPos = point.y;
+        const yPos = positionPoint.y;
         const upVec = new THREE.Vector3(0, 1, 0);
 
         quaternion.setFromAxisAngle(upVec, (Math.PI / 180) * twistAmount * yPos);
 
-        point.applyQuaternion(quaternion);
+        positionPoint.applyQuaternion(quaternion);
+        normalPoint.applyQuaternion(quaternion);
 
-        positionAttribute.setXYZ(i, point.x, point.y, point.z);
+        positionAttribute.setXYZ(i, positionPoint.x, positionPoint.y, positionPoint.z);
+        normalAttribute.setXYZ(i, normalPoint.x, normalPoint.y, normalPoint.z);
     }
 
     geometry.setAttribute('position', positionAttribute);
+    geometry.setAttribute('normal', normalAttribute);
 };
