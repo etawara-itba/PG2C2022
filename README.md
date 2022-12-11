@@ -1,4 +1,4 @@
-# Programación Gráfica
+# Computación Gráfica
 
 Repositorio para los TPs de '72.58 - Computación Gráfica' (ITBA 2do cuatrimestre 2022)
 
@@ -9,9 +9,15 @@ Repositorio para los TPs de '72.58 - Computación Gráfica' (ITBA 2do cuatrimest
 
 ## Demo
 
-Una demo de los TPs disponible desde:
+### Online
+
+Disponible desde:
 
 https://etawara-itba.github.io/PG2C2022/
+
+### Offline
+
+Descargar la branch [gh-pages](https://github.com/etawara-itba/PG2C2022/archive/refs/heads/gh-pages.zip) y abrir el archivo `index.html` con un browser configurado para poder abrir archivos locales.
 
 ## Instalación y Buildeo
 
