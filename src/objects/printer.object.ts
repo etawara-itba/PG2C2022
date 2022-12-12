@@ -3,6 +3,7 @@ import { PRINTABLE_SHAPES } from '../constants/printable.constants';
 import { generatePrintableMesh } from '../helpers/printable.helper';
 import Holder from './holder.object';
 import { deleteMesh } from '../helpers/delete.helper';
+import { getPointLightObject } from '../helpers/light.helper';
 
 class Printer extends THREE.Group {
     private readonly handMovementSpeed: number;
@@ -25,6 +26,7 @@ class Printer extends THREE.Group {
         handMovementSpeed: number,
         printSlowdown: number,
         maxPrintedObjectHeight: number,
+        hasLights = false,
         printingMaterial?: THREE.Material,
         baseMaterial?: THREE.Material,
         rodMaterial?: THREE.Material,
@@ -91,7 +93,7 @@ class Printer extends THREE.Group {
         rod.position.set(0, PRINTER_ROD_HEIGHT / 2, 0);
         elevator.add(rod);
 
-        // PRINTING HAND: ROD_BOX + H_BARS + HAND_BOX + HAND
+        // PRINTING HAND: ROD_BOX + H_BARS + HAND_BOX + HAND (+ LIGHTS)
         const printingHand = new THREE.Group();
         this.printingHandMaxHeight = this.maxPrintedObjectHeight + 5;
         printingHand.position.set(0, this.printingHandMaxHeight, 0);
@@ -108,6 +110,17 @@ class Printer extends THREE.Group {
         const hand = new THREE.Mesh(handGeometry, handMaterial);
         hand.position.set(-PRINTER_ELEVATOR_DISPLACEMENT, PRINTER_HAND_HEIGHT / 2, 0);
         printingHand.add(hand);
+
+        // HAND LIGHTS
+        if (hasLights) {
+            for (let i = 0; i < 4; i++) {
+                const lightX = ((i < 2 ? -1 : 1) * PRINTER_HAND_LENGTH) / 2;
+                const lightZ = ((i % 2 < 1 ? -1 : 1) * PRINTER_HAND_WIDTH) / 2;
+                const lightObject = getPointLightObject(1, 0.4, 80);
+                lightObject.position.set(-PRINTER_ELEVATOR_DISPLACEMENT + lightX, PRINTER_HAND_HEIGHT / 2, lightZ);
+                printingHand.add(lightObject);
+            }
+        }
 
         // ROD BOX
         const PRINTER_ROD_BOX_DEFAULT_RGB = '#64E664';
