@@ -147,8 +147,8 @@ class Tp02 extends Component {
         const ambientLight = new THREE.AmbientLight(0x646464);
         scene.add(ambientLight);
         for (let i = 0; i < 6; i++) {
-            const lightX = (Math.floor(i % 3) - 1) * TP02.LIGHT_INTERVAL_X;
-            const lightZ = (i < 3 ? 1 : -1) * TP02.LIGHT_INTERVAL_Z;
+            const lightX = (i < 3 ? 1 : -1) * TP02.LIGHT_INTERVAL_X;
+            const lightZ = (Math.floor(i % 3) - 1) * TP02.LIGHT_INTERVAL_Z;
             const lightObject = getSpotLightObject();
             lightObject.position.set(lightX, TP02.LIGHT_HEIGHT, lightZ);
             scene.add(lightObject);
@@ -330,11 +330,24 @@ class Tp02 extends Component {
     };
 
     setUpPrinter = (scene) => {
+        // printer base material
+        const printerBaseEnvMaterialPaths = [
+            'maps/envXPos.jpg',
+            'maps/envXNeg.jpg',
+            'maps/envYPos.jpg',
+            'maps/envYNeg.jpg',
+            'maps/envZPos.jpg',
+            'maps/envZNeg.jpg',
+        ];
+        const printerBaseEnvTexture = new THREE.CubeTextureLoader().load(printerBaseEnvMaterialPaths);
+        const printerBaseMaterial = new THREE.MeshPhongMaterial({ color: '#A75DBA', envMap: printerBaseEnvTexture });
+
         const printer = new Printer(
             TP02.PRINTER_HAND_MOVEMENT_SPEED,
             TP02.PRINTER_PRINT_SLOWDOWN,
             TP02.PRINTED_OBJECT_MAX_HEIGHT,
             true,
+            printerBaseMaterial,
         );
         printer.position.set(TP02.PRINTER_X, TP02.PRINTER_Y, TP02.PRINTER_Z);
         this.printer = printer;

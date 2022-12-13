@@ -17,7 +17,6 @@ class Printer extends THREE.Group {
     private printingHandMovementDirection: 1 | -1 = 1;
     private clippingPlane: THREE.Plane;
     // printedObject related
-    private printingMaterial: THREE.Material;
     private printedObjectMaterial: THREE.Material | undefined;
     private printedObjectHeight: number | undefined;
     private _printedObject: THREE.Mesh | undefined;
@@ -27,7 +26,6 @@ class Printer extends THREE.Group {
         printSlowdown: number,
         maxPrintedObjectHeight: number,
         hasLights = false,
-        printingMaterial?: THREE.Material,
         baseMaterial?: THREE.Material,
         rodMaterial?: THREE.Material,
         rodBoxMaterial?: THREE.Material,
@@ -184,18 +182,22 @@ class Printer extends THREE.Group {
         const clippingPlane = new THREE.Plane(new THREE.Vector3(0, -1, 0));
         clippingPlane.constant = 20;
         this.clippingPlane = clippingPlane;
+    }
 
+    print(
+        shape: PRINTABLE_SHAPES,
+        height: number,
+        twistAngle: number,
+        material: THREE.Material,
+        printingMaterial?: THREE.Material,
+    ): void {
         // PRINTING MATERIAL
         if (!printingMaterial)
             printingMaterial = new THREE.MeshLambertMaterial({ color: 0x633b63, side: THREE.DoubleSide });
-        printingMaterial.clippingPlanes = [clippingPlane];
-        // printingMaterial.needsUpdate = true;
-        this.printingMaterial = printingMaterial;
-    }
+        printingMaterial.clippingPlanes = [this.clippingPlane];
 
-    print(shape: PRINTABLE_SHAPES, height: number, twistAngle: number, material: THREE.Material): void {
         height = Math.min(height, this.maxPrintedObjectHeight);
-        const printedObject: THREE.Mesh = generatePrintableMesh(shape, twistAngle, height, this.printingMaterial);
+        const printedObject: THREE.Mesh = generatePrintableMesh(shape, twistAngle, height, printingMaterial);
         printedObject.visible = false;
         this._printedObject = printedObject;
         this.printedObjectMaterial = material;

@@ -25,8 +25,8 @@ export const ROOF_CP = 300;
 export const GROUND_SIZE = 500;
 export const SKY_RGB = '#000000';
 export const LIGHT_HEIGHT = 180;
-export const LIGHT_INTERVAL_X = 180;
-export const LIGHT_INTERVAL_Z = 80;
+export const LIGHT_INTERVAL_X = 80;
+export const LIGHT_INTERVAL_Z = 180;
 
 // printer related
 export const PRINTER_X = -140;
