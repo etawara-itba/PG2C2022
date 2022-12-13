@@ -24,14 +24,12 @@ export const ROOF_HEIGHT = 100;
 export const ROOF_CP = 300;
 export const GROUND_SIZE = 500;
 export const SKY_RGB = '#000000';
-export const GROUND_RGB = '#6F5D5C';
-export const ROOF_RGB = '#C5C5C5';
-export const LIGHT_HEIGHT = 160;
+export const LIGHT_HEIGHT = 180;
 export const LIGHT_INTERVAL_X = 180;
 export const LIGHT_INTERVAL_Z = 80;
 
 // printer related
-export const PRINTER_X = -100;
+export const PRINTER_X = -140;
 export const PRINTER_Y = 0;
 export const PRINTER_Z = 0;
 export const PRINTER_HAND_MOVEMENT_SPEED = 20;
@@ -49,7 +47,7 @@ export const FORKLIFT_STARTING_Z = 0;
 export const FORKLIFT_SCALE_FACTOR = 2;
 
 // shelf related
-export const SHELF_X = 100;
+export const SHELF_X = 140;
 export const SHELF_Y = 0;
 export const SHELF_Z = 0;
 export const SHELF_ROWS = 2;

@@ -9,6 +9,7 @@ import i18n from 'i18next';
 import Forklift from '../objects/forklift.object';
 import Shelf from '../objects/shelf.object';
 import { getSpotLightObject } from '../helpers/light.helper';
+import { BoundingBoxUVGenerator } from '../helpers/uv.helper';
 
 class Tp02 extends Component {
     // objects
@@ -261,13 +262,36 @@ class Tp02 extends Component {
 
     setUpStage = (scene) => {
         // ground
+        const groundDiffuse = new THREE.TextureLoader().load('maps/pisoDiffuse.png');
+        const groundNormal = new THREE.TextureLoader().load('maps/pisoNormal.png');
+        for (const texture of [groundDiffuse, groundNormal]) {
+            texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+            texture.repeat.set(4, 4);
+            texture.center.set(0.5, 0.5);
+        }
         const groundGeometry = new THREE.PlaneGeometry(TP02.GROUND_SIZE, TP02.GROUND_SIZE, 1, 1);
         groundGeometry.rotateX(-Math.PI / 2);
-        const groundMaterial = new THREE.MeshPhongMaterial({ color: TP02.GROUND_RGB });
+        const groundMaterial = new THREE.MeshPhongMaterial({
+            map: groundDiffuse,
+            normalMap: groundNormal,
+            side: THREE.FrontSide,
+        });
         const ground = new THREE.Mesh(groundGeometry, groundMaterial);
         scene.add(ground);
 
         // roof
+        const roofFrontDiffuse = new THREE.TextureLoader().load('maps/paredDiffuse.png');
+        const roofFrontNormal = new THREE.TextureLoader().load('maps/paredNormal.png');
+        for (const texture of [roofFrontDiffuse, roofFrontNormal]) {
+            texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+            texture.repeat.set(1 / 160, 1 / 160);
+            texture.center.set(0.5, 0.5);
+        }
+        const roofSideDiffuse = roofFrontDiffuse.clone();
+        const roofSideNormal = roofFrontNormal.clone();
+        for (const texture of [roofSideDiffuse, roofSideNormal]) {
+            texture.rotation = Math.PI / 2;
+        }
         const roofShape = new THREE.Shape();
         roofShape.moveTo(-TP02.GROUND_SIZE / 2, -1);
         roofShape.lineTo(-TP02.GROUND_SIZE / 2, TP02.ROOF_HEIGHT);
@@ -284,9 +308,22 @@ class Tp02 extends Component {
             steps: 10,
             depth: TP02.GROUND_SIZE,
             bevelEnabled: false,
+            material: 0,
+            extrudeMaterial: 1,
+            uvGenerator: BoundingBoxUVGenerator,
         };
         const roofGeometry = new THREE.ExtrudeGeometry(roofShape, extrudeSettings);
-        const roofMaterial = new THREE.MeshPhongMaterial({ color: TP02.ROOF_RGB, side: THREE.BackSide });
+        const roofMaterialFront = new THREE.MeshPhongMaterial({
+            map: roofFrontDiffuse,
+            normalMap: roofFrontNormal,
+            side: THREE.BackSide,
+        });
+        const roofMaterialSide = new THREE.MeshPhongMaterial({
+            map: roofSideDiffuse,
+            normalMap: roofSideNormal,
+            side: THREE.BackSide,
+        });
+        const roofMaterial = [roofMaterialFront, roofMaterialSide];
         const roof = new THREE.Mesh(roofGeometry, roofMaterial);
         roof.position.z -= TP02.GROUND_SIZE / 2;
         scene.add(roof);

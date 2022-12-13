@@ -11,10 +11,11 @@ export const getSpotLightObject = (
     radius = 5,
     height = 1,
     intensity = 1,
-    distance = 600,
-    angle = Math.PI / 4,
+    distance = 1600,
+    angle = Math.PI / 5,
+    penumbra = 0.8,
 ): THREE.SpotLight => {
-    const lightObject = new THREE.SpotLight('#FFFFFF', intensity, distance, angle, 1);
+    const lightObject = new THREE.SpotLight('#FFFFFF', intensity, distance, angle, penumbra);
     const sphere = new THREE.SphereGeometry(1, 16, 8);
     sphere.scale(radius, height, radius);
     lightObject.add(new THREE.Mesh(sphere, new THREE.MeshBasicMaterial({ color: '#FFFFFF' })));
