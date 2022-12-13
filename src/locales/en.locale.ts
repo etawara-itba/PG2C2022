@@ -13,6 +13,8 @@ export const en = {
         'page.tp01.settings.printer.shape': 'Shape',
         'page.tp01.settings.printer.height': 'Height',
         'page.tp01.settings.printer.twistAngle': 'Twist Angle',
+        'page.tp01.settings.printer.diffuseMaterial': 'Diffuse Map',
+        'page.tp01.settings.printer.textureScale': 'Scale',
         'page.tp01.settings.printer.print': 'Print Object',
     },
 };

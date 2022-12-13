@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import * as THREE from 'three';
 import * as TP02 from '../constants/tp02.constants';
-import { PRINTABLE_OBJECT_RGB, PRINTABLE_SHAPES } from '../constants/printable.constants';
+import { PRINTABLE_DIFFUSE_MATERIALS, PRINTABLE_SHAPES, PRINT_STATE } from '../constants/printable.constants';
 import { OrbitControls } from '../scripts/OrbitControls';
 import { GUI } from 'dat.gui';
 import Printer from '../objects/printer.object';
@@ -10,6 +10,7 @@ import Forklift from '../objects/forklift.object';
 import Shelf from '../objects/shelf.object';
 import { getSpotLightObject } from '../helpers/light.helper';
 import { BoundingBoxUVGenerator } from '../helpers/uv.helper';
+import { getPrintableTexture } from '../helpers/printable.helper';
 
 class Tp02 extends Component {
     // objects
@@ -25,6 +26,8 @@ class Tp02 extends Component {
         shape: TP02.SETTINGS_DEFAULT_SHAPE,
         height: TP02.SETTINGS_DEFAULT_HEIGHT,
         twistAngle: TP02.SETTINGS_DEFAULT_TWIST_ANGLE,
+        diffuseMaterial: TP02.SETTINGS_DEFAULT_TEXTURE_DIFFUSE,
+        textureScale: TP02.SETTINGS_DEFAULT_TEXTURE_SCALE,
         eventOnPrint: () => {
             this.eventPrintObject();
         },
@@ -135,6 +138,15 @@ class Tp02 extends Component {
         printerSettings
             .add(this.settings, 'twistAngle', TP02.SETTINGS_MIN_TWIST_ANGLE, TP02.SETTINGS_MAX_TWIST_ANGLE)
             .name(i18n.t('page.tp01.settings.printer.twistAngle'));
+        // diffuse material
+        const diffuseMaterials = Object.values(PRINTABLE_DIFFUSE_MATERIALS);
+        printerSettings
+            .add(this.settings, 'diffuseMaterial', diffuseMaterials)
+            .name(i18n.t('page.tp01.settings.printer.diffuseMaterial'));
+        // texture scale
+        printerSettings
+            .add(this.settings, 'textureScale', TP02.SETTINGS_MIN_TEXTURE_SCALE, TP02.SETTINGS_MAX_TEXTURE_SCALE)
+            .name(i18n.t('page.tp01.settings.printer.textureScale'));
         // print
         printerSettings.add(this.settings, 'eventOnPrint').name(i18n.t('page.tp01.settings.printer.print'));
         // keep open
@@ -448,16 +460,30 @@ class Tp02 extends Component {
     };
 
     eventPrintObject = () => {
-        const defaultPrintableMaterial = new THREE.MeshLambertMaterial({
-            color: PRINTABLE_OBJECT_RGB,
+        const printedTexture = getPrintableTexture(this.settings.diffuseMaterial, PRINT_STATE.PRINTED);
+        const printingTexture = getPrintableTexture(this.settings.diffuseMaterial, PRINT_STATE.PRINTING);
+        for (const texture of [printedTexture, printingTexture]) {
+            texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+            texture.repeat.set(this.settings.textureScale, this.settings.textureScale);
+            texture.center.set(0.5, 0.5);
+        }
+
+        const printedMaterial = new THREE.MeshPhongMaterial({
+            map: printedTexture,
             side: THREE.DoubleSide,
         });
+        const printingMaterial = new THREE.MeshPhongMaterial({
+            map: printingTexture,
+            side: THREE.DoubleSide,
+        });
+
         try {
             this.printer.print(
                 this.settings.shape,
                 this.settings.height,
                 this.settings.twistAngle,
-                defaultPrintableMaterial,
+                printedMaterial,
+                printingMaterial,
             );
         } catch (err) {
             console.log(err.message);

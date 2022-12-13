@@ -1,3 +1,7 @@
 ruedaVertical: https://www.filterforge.com/filters/3610.html
 ruedaLateral (Normal & Bump map): https://www.filterforge.com/filters/3166.html
+printableMaterialN3: https://www.filterforge.com/filters/7851-normal.jpg
+printableMaterialN4: https://filterforge.com/filters/11092-normal.jpg
+printableMaterialN5: https://www.keithlantz.net/wp-content/uploads/2011/10/normal_4.png
+https://filterforge.com/filters/11092-normal.jpg
 resto: Material del Curso

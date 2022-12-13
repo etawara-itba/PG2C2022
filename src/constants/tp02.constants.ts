@@ -17,6 +17,10 @@ export const SETTINGS_DEFAULT_HEIGHT = 20;
 export const SETTINGS_DEFAULT_TWIST_ANGLE = 90;
 export const SETTINGS_MIN_TWIST_ANGLE = 0;
 export const SETTINGS_MAX_TWIST_ANGLE = 360;
+export const SETTINGS_DEFAULT_TEXTURE_DIFFUSE = 'P1';
+export const SETTINGS_DEFAULT_TEXTURE_SCALE = 4;
+export const SETTINGS_MIN_TEXTURE_SCALE = 1;
+export const SETTINGS_MAX_TEXTURE_SCALE = 20;
 
 // scene related
 export const MAX_DELTA = 1.0 / 24;

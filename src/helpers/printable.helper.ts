@@ -1,6 +1,13 @@
-import { POINTS_PER_HEIGHT, PRINTABLE_SHAPES, RADIUS } from '../constants/printable.constants';
+import {
+    POINTS_PER_HEIGHT,
+    PRINTABLE_DIFFUSE_MATERIALS,
+    PRINTABLE_SHAPES,
+    PRINT_STATE,
+    RADIUS,
+} from '../constants/printable.constants';
 import * as THREE from 'three';
 import { getThreeShape } from './shape.helper';
+import { BoundingBoxUVGenerator } from './uv.helper';
 
 export const generatePrintableMesh = (
     shape: PRINTABLE_SHAPES,
@@ -10,19 +17,18 @@ export const generatePrintableMesh = (
 ): THREE.Mesh => {
     if (height <= 0) throw new Error(`height must be > 0 (height=${height})`);
 
+    const divisions = POINTS_PER_HEIGHT * height;
     let geometry: THREE.BufferGeometry;
     if (isRevolution(shape)) {
-        geometry = generateRevolutionGeometry(shape, height);
+        geometry = generateRevolutionGeometry(shape, divisions);
     } else if (isExtrude(shape)) {
-        geometry = generateExtrudeGeometry(shape, twistAngle);
+        geometry = generateExtrudeGeometry(shape, divisions, twistAngle);
     } else {
         throw new Error(`shape is not revolution nor extrude (shape = ${shape})`);
     }
+    geometry.scale(RADIUS, height, RADIUS);
 
-    const mesh: THREE.Mesh = new THREE.Mesh(geometry, material);
-    mesh.scale.set(RADIUS, height, RADIUS);
-
-    return mesh;
+    return new THREE.Mesh(geometry, material);
 };
 
 const isRevolution = (shape: PRINTABLE_SHAPES): boolean => {
@@ -45,20 +51,25 @@ const isExtrude = (shape: PRINTABLE_SHAPES): boolean => {
     return extrude.includes(shape);
 };
 
-const generateRevolutionGeometry = (shape: PRINTABLE_SHAPES, height: number): THREE.BufferGeometry => {
+const generateRevolutionGeometry = (shape: PRINTABLE_SHAPES, divisions: number): THREE.BufferGeometry => {
     if (!isRevolution(shape)) throw Error(`${shape} is not revolution shape`);
 
-    const points = getThreeShape(shape).getPoints(height * POINTS_PER_HEIGHT);
+    const points = getThreeShape(shape).getSpacedPoints(divisions);
     return new THREE.LatheGeometry(points);
 };
 
-const generateExtrudeGeometry = (shape: PRINTABLE_SHAPES, twistAngle: number): THREE.BufferGeometry => {
+const generateExtrudeGeometry = (
+    shape: PRINTABLE_SHAPES,
+    divisions: number,
+    twistAngle: number,
+): THREE.BufferGeometry => {
     if (!isExtrude(shape)) throw Error(`${shape} is not extrude shape`);
 
     const extrudeSettings = {
-        steps: POINTS_PER_HEIGHT,
+        steps: divisions,
         depth: 1,
         bevelEnabled: false,
+        uvGenerator: BoundingBoxUVGenerator,
     };
 
     const threeShape: THREE.Shape = getThreeShape(shape);
@@ -95,4 +106,11 @@ const twistGeometry = (geometry: THREE.BufferGeometry, twistAmount: number): voi
 
     geometry.setAttribute('position', positionAttribute);
     geometry.setAttribute('normal', normalAttribute);
+};
+
+export const getPrintableTexture = (
+    textureId: PRINTABLE_DIFFUSE_MATERIALS | string,
+    state: PRINT_STATE,
+): THREE.Texture => {
+    return new THREE.TextureLoader().load(`maps/printableMaterial${textureId}${state}.png`);
 };

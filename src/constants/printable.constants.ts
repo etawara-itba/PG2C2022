@@ -12,3 +12,17 @@ export enum PRINTABLE_SHAPES {
     B3 = 'B3',
     B4 = 'B4',
 }
+
+export enum PRINTABLE_DIFFUSE_MATERIALS {
+    P1 = 'P1',
+    P2 = 'P2',
+    P3 = 'P3',
+    P4 = 'P4',
+    P5 = 'P5',
+    P6 = 'P6',
+}
+
+export enum PRINT_STATE {
+    PRINTING = 'Printing',
+    PRINTED = 'Printed',
+}
