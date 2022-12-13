@@ -7,7 +7,7 @@
     "format": "prettier --write ./src",
     "lint": "eslint ./src --ext .tsx,.ts,.jsx,.js --fix",
     "start": "live-server ./dist --no-browser",
-    "build": "npm run clean && parcel build public/index.html --public-url . --no-cache",
+    "build": "npm run clean && cp -R ./public/maps ./dist/maps & parcel build public/index.html --public-url . --no-cache",
     "test": "react-scripts test",
     "test:noWatch": "npm run test -- --watchAll=false",
     "eject": "react-scripts eject",

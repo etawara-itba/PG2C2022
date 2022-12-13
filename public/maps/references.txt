@@ -1,0 +1,3 @@
+ruedaVertical: https://www.filterforge.com/filters/3610.html
+ruedaLateral (Normal & Bump map): https://www.filterforge.com/filters/3166.html
+resto: Material del Curso

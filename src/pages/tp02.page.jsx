@@ -306,6 +306,51 @@ class Tp02 extends Component {
     };
 
     setUpForklift = (scene, aspect) => {
+        // Wheel material
+        const tyreRepeatFactorX = 0.9;
+        const tyreRepeatFactorY = 10;
+        const wheelRotation = Math.PI / 2;
+        const wheelLateralDiffuse = new THREE.TextureLoader().load('maps/ruedaLateralDiffuse.jpg');
+        const wheelLateralNormal = new THREE.TextureLoader().load('maps/ruedaLateralNormal.jpg');
+        const wheelLateralBump = new THREE.TextureLoader().load('maps/ruedaLateralBump.jpg');
+        for (const texture of [wheelLateralDiffuse, wheelLateralNormal, wheelLateralBump]) {
+            texture.center.set(0.5, 0.5);
+        }
+        const wheelLateralMaterial = new THREE.MeshPhongMaterial({
+            map: wheelLateralDiffuse,
+            normalMap: wheelLateralNormal,
+            bumpMap: wheelLateralBump,
+            side: THREE.DoubleSide,
+        });
+        const wheelVerticalDiffuse = new THREE.TextureLoader().load('maps/ruedaVerticalDiffuse.jpg');
+        const wheelVerticalNormal = new THREE.TextureLoader().load('maps/ruedaVerticalNormal.jpg');
+        for (const texture of [wheelVerticalDiffuse, wheelVerticalNormal]) {
+            texture.center.set(0.5, 0.5);
+            texture.rotation = wheelRotation;
+            texture.wrapT = THREE.RepeatWrapping;
+            texture.repeat.set(tyreRepeatFactorX, tyreRepeatFactorY);
+        }
+        const wheelVerticalMaterial = new THREE.MeshPhongMaterial({
+            map: wheelVerticalDiffuse,
+            normalMap: wheelVerticalNormal,
+            side: THREE.DoubleSide,
+        });
+        const wheelMaterial = [wheelVerticalMaterial, wheelLateralMaterial, wheelLateralMaterial];
+
+        // cabinBody material
+        const cabinBodyDiffuse = new THREE.TextureLoader().load('maps/gruaDiffuse.jpg');
+        const cabinBodyNormal = new THREE.TextureLoader().load('maps/gruaNormal.jpg');
+        for (const texture of [cabinBodyDiffuse, cabinBodyNormal]) {
+            texture.wrapS = texture.wrapT = THREE.RepeatWrapping;
+            texture.repeat.set(1 / 24, 1 / 24);
+            texture.center.set(0.5, 0.5);
+            texture.offset.set(0.4, 0.2);
+        }
+        const cabinBodyMaterial = new THREE.MeshPhongMaterial({ map: cabinBodyDiffuse, normalMap: cabinBodyNormal });
+
+        // cabinChair material
+        const cabinChairMaterial = new THREE.MeshPhongMaterial({ color: '#454545' });
+
         const forklift = new Forklift(
             TP02.FORKLIFT_MOVEMENT_SPEED,
             TP02.FORKLIFT_ROTATION_SPEED,
@@ -315,6 +360,10 @@ class Tp02 extends Component {
             aspect,
             TP02.CAMERA_DEFAULT_NEAR,
             TP02.CAMERA_DEFAULT_FAR,
+            true,
+            wheelMaterial,
+            cabinBodyMaterial,
+            cabinChairMaterial,
         );
         forklift.position.set(TP02.FORKLIFT_STARTING_X, TP02.FORKLIFT_STARTING_Y, TP02.FORKLIFT_STARTING_Z);
         forklift.rotateY(Math.PI);

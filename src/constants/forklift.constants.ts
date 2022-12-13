@@ -6,6 +6,7 @@ export const WHEEL_TIRE_RADIUS = 3;
 export const WHEEL_HOLE_RADIUS = 2.5;
 export const WHEEL_WIDTH = 5;
 export const WHEEL_HOLE_WIDTH = 4;
+export const WHEEL_SEGMENTS = 16;
 export const CAMERA_FRONT_X = 0;
 export const CAMERA_FRONT_Y = CABIN_HEIGHT + 10;
 export const CAMERA_FRONT_Z = 0;

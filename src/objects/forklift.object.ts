@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import * as FORKLIFT from '../constants/forklift.constants';
 import Grabber from './grabber.object';
 import Holder from './holder.object';
+import { BoundingBoxUVGenerator } from '../helpers/uv.helper';
 
 class Forklift extends THREE.Group {
     private cabin: THREE.Group;
@@ -29,7 +30,8 @@ class Forklift extends THREE.Group {
         cameraAspect?: number,
         cameraNear?: number,
         cameraFar?: number,
-        wheelsMaterial?: THREE.Material,
+        hasCylinderWheels = false,
+        wheelsMaterial?: THREE.Material | THREE.Material[],
         cabinBodyMaterial?: THREE.Material,
         cabinChairMaterial?: THREE.Material,
         cabinPanelMaterial?: THREE.Material,
@@ -58,7 +60,9 @@ class Forklift extends THREE.Group {
 
         // Create wheels
         for (let i = 0; i < 4; i++) {
-            this.wheels.push(this.createWheel(FORKLIFT.WHEEL_RADIUS, FORKLIFT.WHEEL_WIDTH, wheelsMaterial));
+            this.wheels.push(
+                this.createWheel(FORKLIFT.WHEEL_RADIUS, FORKLIFT.WHEEL_WIDTH, hasCylinderWheels, wheelsMaterial),
+            );
         }
 
         // Positions wheels relative to the group (assert right wheels to have i%2=0)
@@ -253,21 +257,38 @@ class Forklift extends THREE.Group {
      * Creates wheel as a cylinders
      * @param radius        Radius of the wheel
      * @param width         Width of the wheel
+     * @param hasCylinderWheels If we use CylinderGeometry or Lathe, affects the material
      * @param material
      */
-    createWheel(radius: number, width: number, material?: THREE.Material): THREE.Object3D {
-        const wheelShape = new THREE.Shape();
-        wheelShape.moveTo(0, -FORKLIFT.WHEEL_HOLE_WIDTH / 2);
-        wheelShape.lineTo(FORKLIFT.WHEEL_HOLE_RADIUS, -FORKLIFT.WHEEL_HOLE_WIDTH / 2);
-        wheelShape.lineTo(FORKLIFT.WHEEL_TIRE_RADIUS, -FORKLIFT.WHEEL_WIDTH / 2);
-        wheelShape.lineTo(FORKLIFT.WHEEL_RADIUS, -FORKLIFT.WHEEL_WIDTH / 2);
-        wheelShape.lineTo(FORKLIFT.WHEEL_RADIUS, FORKLIFT.WHEEL_WIDTH / 2);
-        wheelShape.lineTo(FORKLIFT.WHEEL_TIRE_RADIUS, FORKLIFT.WHEEL_WIDTH / 2);
-        wheelShape.lineTo(FORKLIFT.WHEEL_HOLE_RADIUS, FORKLIFT.WHEEL_HOLE_WIDTH / 2);
-        wheelShape.lineTo(0, FORKLIFT.WHEEL_HOLE_WIDTH / 2);
+    createWheel(
+        radius: number,
+        width: number,
+        hasCylinderWheels: boolean,
+        material?: THREE.Material | THREE.Material[],
+    ): THREE.Object3D {
+        let geometry;
+        if (hasCylinderWheels) {
+            geometry = new THREE.CylinderGeometry(
+                FORKLIFT.WHEEL_RADIUS,
+                FORKLIFT.WHEEL_RADIUS,
+                FORKLIFT.WHEEL_WIDTH,
+                FORKLIFT.WHEEL_SEGMENTS,
+            );
+        } else {
+            const wheelShape = new THREE.Shape();
+            wheelShape.moveTo(0, -FORKLIFT.WHEEL_HOLE_WIDTH / 2);
+            wheelShape.lineTo(FORKLIFT.WHEEL_HOLE_RADIUS, -FORKLIFT.WHEEL_HOLE_WIDTH / 2);
+            wheelShape.lineTo(FORKLIFT.WHEEL_TIRE_RADIUS, -FORKLIFT.WHEEL_WIDTH / 2);
+            wheelShape.lineTo(FORKLIFT.WHEEL_RADIUS, -FORKLIFT.WHEEL_WIDTH / 2);
+            wheelShape.lineTo(FORKLIFT.WHEEL_RADIUS, FORKLIFT.WHEEL_WIDTH / 2);
+            wheelShape.lineTo(FORKLIFT.WHEEL_TIRE_RADIUS, FORKLIFT.WHEEL_WIDTH / 2);
+            wheelShape.lineTo(FORKLIFT.WHEEL_HOLE_RADIUS, FORKLIFT.WHEEL_HOLE_WIDTH / 2);
+            wheelShape.lineTo(0, FORKLIFT.WHEEL_HOLE_WIDTH / 2);
 
-        const points = wheelShape.getPoints(24);
-        const geometry = new THREE.LatheGeometry(points);
+            const points = wheelShape.getPoints(24);
+            geometry = new THREE.LatheGeometry(points, FORKLIFT.WHEEL_SEGMENTS);
+        }
+
         if (!material) material = new THREE.MeshLambertMaterial({ color: 0x67567c, flatShading: true });
         const wheel = new THREE.Mesh(geometry, material);
         wheel.rotateX(Math.PI / 2); // Cylinders are made upright, but wheels should be to the side, so we rotate them
@@ -334,9 +355,12 @@ class Forklift extends THREE.Group {
             steps: 1,
             depth: width,
             bevelEnabled: false,
+            uvGenerator: BoundingBoxUVGenerator,
         };
 
         const geometry = new THREE.ExtrudeGeometry(shape, extrudeSettings);
+        geometry.computeBoundingBox();
+        geometry.computeVertexNormals();
         if (!material) material = new THREE.MeshLambertMaterial({ color: 0xf3fd12 });
 
         return new THREE.Mesh(geometry, material);
